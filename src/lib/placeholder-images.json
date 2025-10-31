@@ -1,0 +1,10 @@
+{
+  "placeholderImages": [
+    {
+      "id": "product-placeholder",
+      "description": "A placeholder image for a product.",
+      "imageUrl": "https://images.unsplash.com/photo-1601568656750-bf1a9c205613?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwcm9kdWN0JTIwcGFja2FnZXxlbnwwfHx8fDE3NjE1NzEwMDV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "product package"
+    }
+  ]
+}

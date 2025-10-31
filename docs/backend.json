@@ -1,0 +1,161 @@
+
+{
+  "entities": {
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product in the store's inventory.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the product."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the product. May be AI-suggested."
+        },
+        "barcode": {
+          "type": "string",
+          "description": "The barcode of the product, if available."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the product image stored in Google Drive.",
+          "format": "uri"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "The current quantity of the product in stock."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the product."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "imageUrl",
+        "quantity",
+        "price"
+      ]
+    },
+    "PaymentSettings": {
+      "title": "Payment Settings",
+      "type": "object",
+      "description": "Stores application-wide payment settings.",
+      "properties": {
+        "qrCodeUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "The URL of the main QR code for payments."
+        }
+      },
+      "required": ["qrCodeUrl"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "type": "object",
+      "description": "Represents a single sales transaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the transaction."
+        },
+        "orderItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "List of products included in the transaction."
+        },
+        "subtotal": {
+          "type": "number",
+          "description": "The total price before discounts."
+        },
+        "discount": {
+          "type": "number",
+          "description": "The applied discount amount."
+        },
+        "total": {
+          "type": "number",
+          "description": "The final total price after discounts."
+        },
+        "createdAt": {
+          "type": "object",
+          "properties": {
+            "seconds": {"type": "number"},
+            "nanoseconds": {"type": "number"}
+          },
+          "description": "Timestamp of when the transaction was created."
+        }
+      },
+      "required": ["id", "orderItems", "subtotal", "discount", "total", "createdAt"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/products/{productId}",
+        "definition": {
+          "entityName": "Product",
+          "schema": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "Stores product information. Requires authentication for creation. Includes product details such as name, description, barcode, image URL, quantity, and price.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/settings/payment",
+        "definition": {
+          "entityName": "PaymentSettings",
+          "schema": {
+            "$ref": "#/backend/entities/PaymentSettings"
+          },
+          "description": "Stores global payment settings, like the main QR code URL. Authenticated users can read and write to this document.",
+          "singleton": true
+        }
+      },
+      {
+        "path": "/transactions/{transactionId}",
+        "definition": {
+            "entityName": "Transaction",
+            "schema": {
+                "$ref": "#/backend/entities/Transaction"
+            },
+            "description": "Stores transaction history. Authenticated users can create new transactions and read the list of all transactions.",
+            "params": [
+                {
+                    "name": "transactionId",
+                    "description": "The unique identifier for the transaction."
+                }
+            ],
+            "rules": {
+              "read": "request.auth != null",
+              "list": "request.auth != null",
+              "create": "request.auth != null"
+            }
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage product information, application settings, and sales transactions. The `/products` collection stores inventory. The `/settings/payment` document is a singleton for the primary QR code URL. The `/transactions` collection stores sales history. Access to all collections requires user authentication to ensure data security. Authenticated users can manage products, update payment settings, and create/view sales history."
+  }
+}
