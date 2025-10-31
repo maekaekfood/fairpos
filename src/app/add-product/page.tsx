@@ -34,7 +34,7 @@ const QR_BOX_SIZE = 280;
 export default function AddProductPage() {
   const [step, setStep] = useState<Step>('initial');
   const [scannedBarcode, setScannedBarcode] = useState<string>('');
-  const [hasCameraPermission, setHasCameraPermission]_useState<boolean>(true));
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean>(true);
   const [scannerState, setScannerState] = useState<Html5QrcodeScannerState>(Html5QrcodeScannerState.NOT_STARTED);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const { toast } = useToast();
